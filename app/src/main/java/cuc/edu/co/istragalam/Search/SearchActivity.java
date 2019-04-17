@@ -1,4 +1,4 @@
-package cuc.edu.co.istragalam;
+package cuc.edu.co.istragalam.Search;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -11,11 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import Utils.BottomNavigationViewHelper;
+import cuc.edu.co.istragalam.R;
 
-public class ProfileActivity extends AppCompatActivity {
-    private static final ProfileActivity ourInstance = new ProfileActivity();
-    private static final String TAG = "ProfileActivity";
-    private static final int ACTIVITY_NUM = 4;
+public class SearchActivity extends AppCompatActivity {
+    private static final SearchActivity ourInstance = new SearchActivity();
+    private static final String TAG = "SearchActivity";
+    private static final int ACTIVITY_NUM = 1;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +33,7 @@ public class ProfileActivity extends AppCompatActivity {
         Log.d(TAG, "setUtbottomNavigationView: setting up bottomNavigationView");
         BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(ProfileActivity.this, bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(SearchActivity.this, bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);

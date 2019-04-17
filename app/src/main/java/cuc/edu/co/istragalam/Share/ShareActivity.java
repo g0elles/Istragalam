@@ -1,4 +1,4 @@
-package cuc.edu.co.istragalam;
+package cuc.edu.co.istragalam.Share;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -11,11 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import Utils.BottomNavigationViewHelper;
+import cuc.edu.co.istragalam.R;
 
-public class SearchActivity extends AppCompatActivity {
-    private static final SearchActivity ourInstance = new SearchActivity();
-    private static final String TAG = "SearchActivity";
-    private static final int ACTIVITY_NUM = 1;
+public class ShareActivity extends AppCompatActivity {
+    private static final ShareActivity ourInstance = new ShareActivity();
+    private static final String TAG = "ShareActivity";
+    private static final int ACTIVITY_NUM = 2;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +33,7 @@ public class SearchActivity extends AppCompatActivity {
         Log.d(TAG, "setUtbottomNavigationView: setting up bottomNavigationView");
         BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(SearchActivity.this, bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(ShareActivity.this, bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);

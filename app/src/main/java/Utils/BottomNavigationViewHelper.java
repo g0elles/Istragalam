@@ -10,12 +10,12 @@ import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-import cuc.edu.co.istragalam.HomeActivity;
-import cuc.edu.co.istragalam.LikesActivity;
-import cuc.edu.co.istragalam.ProfileActivity;
+import cuc.edu.co.istragalam.Home.HomeActivity;
+import cuc.edu.co.istragalam.Likes.LikesActivity;
+import cuc.edu.co.istragalam.Profile.ProfileActivity;
 import cuc.edu.co.istragalam.R;
-import cuc.edu.co.istragalam.SearchActivity;
-import cuc.edu.co.istragalam.ShareActivity;
+import cuc.edu.co.istragalam.Search.SearchActivity;
+import cuc.edu.co.istragalam.Share.ShareActivity;
 
 public class BottomNavigationViewHelper {
     private static final String TAG = "BottomNavigationViewHel";
