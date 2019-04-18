@@ -1,12 +1,16 @@
 package cuc.edu.co.istragalam.Profile;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
@@ -20,11 +24,25 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_profile);
         Log.d(TAG, "onCreate: Started");
         setUtbottomNavigationView();
-
+        setupToolbar();
     }
+
+        private void setupToolbar(){
+            Toolbar toolbar = findViewById(R.id.profileToolbar);
+            setSupportActionBar(toolbar);
+            ImageView profileMenu = findViewById(R.id.profileMenu);
+            profileMenu.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "onClick: navigaring to account settings");
+                    Intent intent = new Intent(ProfileActivity.this, AccountSettingsActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
 
     /*
      * BottomNavigationView setup
@@ -38,4 +56,6 @@ public class ProfileActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
     }
+
+
 }

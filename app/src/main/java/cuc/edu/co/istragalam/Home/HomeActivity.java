@@ -34,7 +34,8 @@ public class HomeActivity extends AppCompatActivity {
         adapter.addFragment(new CameraFragment());
         adapter.addFragment(new HomeFragment());
         adapter.addFragment(new MessageFragment());
-        ViewPager viewPager = findViewById(R.id.container);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.container);
+        viewPager.setAdapter(adapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
