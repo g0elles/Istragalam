@@ -62,7 +62,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
    private void setupImageGrid(ArrayList<String> imgURLs){
-        GridView gridView = (GridView) findViewById(R.id.gridView);
+        GridView gridView =  findViewById(R.id.gridView);
 
         GridImageAdapter adapter = new GridImageAdapter(ProfileActivity.this, R.layout.layout_grid_imageview, "", imgURLs);
         gridView.setAdapter(adapter);
@@ -76,9 +76,9 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setupActivityWidgets(){
-        mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
+        mProgressBar = findViewById(R.id.profileProgressBar);
         mProgressBar.setVisibility(View.GONE);
-        profilePhoto = (ImageView) findViewById(R.id.profile_photo);
+        profilePhoto =  findViewById(R.id.profile_photo);
     }
 
     private void setupToolbar(){
