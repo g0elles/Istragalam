@@ -1,6 +1,7 @@
 package cuc.edu.co.istragalam.Home;
 
 import android.os.Bundle;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.util.Log;
 import android.view.Menu;
@@ -14,6 +15,7 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import Utils.BottomNavigationViewHelper;
 import Utils.SectionsPagerAdapter;
+import Utils.UniversalmageLoader;
 import cuc.edu.co.istragalam.R;
 
 public class HomeActivity extends AppCompatActivity {
@@ -23,9 +25,15 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Log.d(TAG, "onCreate: starting.");
+        initImageLoader();
         setUtbottomNavigationView();
         setupViewPager();
     }
+    private void initImageLoader(){
+        UniversalmageLoader universalImageLoader = new UniversalmageLoader(HomeActivity.this);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
+    }
+
 
     /**
      * Responsible for adding the 3 tabs: Camera, Home, Messages

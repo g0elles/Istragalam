@@ -36,5 +36,8 @@ dependencies {
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0-alpha01'
     //profile pic view
     implementation 'de.hdodenhof:circleimageview:3.0.0'
+    //universal image loader
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    //maodi
 
 }

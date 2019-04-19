@@ -43,7 +43,7 @@
                     android:layout_weight="25">
 
                     <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/profile_image"
+                        android:id="@+id/profile_photo"
                         android:layout_width="80dp"
                         android:layout_height="80dp"
                         android:layout_centerVertical="true"
@@ -122,6 +122,7 @@
                     android:numColumns="3"
                     android:stretchMode="columnWidth"
                     android:verticalSpacing="1dp">
+
 
 
                 </GridView>

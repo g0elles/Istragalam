@@ -2,6 +2,8 @@ package cuc.edu.co.istragalam.Profile;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,9 +15,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+
 import java.util.ArrayList;
 
+import Utils.BottomNavigationViewHelper;
 import Utils.SectionsStatePagerAdapter;
+import cuc.edu.co.istragalam.Home.HomeActivity;
 import cuc.edu.co.istragalam.R;
 
 public class AccountSettingsActivity extends AppCompatActivity {
@@ -23,6 +29,8 @@ public class AccountSettingsActivity extends AppCompatActivity {
     private SectionsStatePagerAdapter pagerAdapter;
     private ViewPager mViewPager;
     private RelativeLayout mRelativeLayout;
+    private static final int ACTIVITY_NUM = 4;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,6 +40,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
         mViewPager = findViewById(R.id.container);
         mRelativeLayout = findViewById(R.id.relLayout1);
         setupSettingslist();
+        setUtbottomNavigationView();
         setupFragments();
 
         //la barra para volveer al perfil
@@ -72,10 +81,23 @@ public class AccountSettingsActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "onItemClick: navigatinf to fragmanerrt: "position);
+                Log.d(TAG, "onItemClick: navigatinf to fragmanerrt: "+position);
                 setViewPager(position);
             }
         });
+    }
+
+    /*
+     * BottomNavigationView setup
+     * **/
+    private void setUtbottomNavigationView(){
+        Log.d(TAG, "setUtbottomNavigationView: setting up bottomNavigationView");
+        BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(AccountSettingsActivity.this, bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
     }
 }
 
