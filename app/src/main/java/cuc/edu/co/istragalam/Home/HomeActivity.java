@@ -13,6 +13,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import Utils.BottomNavigationViewHelper;
+import Utils.SectionsPagerAdapter;
 import cuc.edu.co.istragalam.R;
 
 public class HomeActivity extends AppCompatActivity {
