@@ -4,4 +4,11 @@
     <string name="edit_profile">Edit Profile</string>
     <string name="sing_out">Sing Out</string>
 
+
+    <string name="facebook_application_id"
+        translatable="false">336357490402199</string>
+    <string name="firebase_web_host" translatable="false">istragalam.firebaseapp.com</string>
+
+
+
 </resources>

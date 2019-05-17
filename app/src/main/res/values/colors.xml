@@ -7,4 +7,13 @@
     <color name="white">#fff</color>
     <color name="black">#000</color>
     <color name="link_blue">#005ce6</color>
+
+    <color name="colorPrimaryL">#673AB7</color>
+    <color name="colorPrimaryDarkL">#512DA8</color>
+    <color name="colorPrimaryLightL">#EDE7F6</color>
+    <color name="colorAccentL">#7C4DFF</color>
+    <color name="colorSecondary">#FFC107</color>
+
+
+
 </resources>
