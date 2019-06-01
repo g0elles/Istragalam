@@ -1,5 +1,6 @@
 package cuc.edu.co.istragalam.Profile;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -42,6 +43,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
         setupSettingslist();
         setUtbottomNavigationView();
         setupFragments();
+        getIncomingIntent();
 
         //la barra para volveer al perfil
         ImageView backArrow =  findViewById(R.id.backArrow);
@@ -57,10 +59,19 @@ public class AccountSettingsActivity extends AppCompatActivity {
         
     }
 
+    private void getIncomingIntent(){
+        Intent intent = getIntent();
+
+        if(intent.hasExtra(getString(R.string.calling_activity))){
+            Log.d(TAG, "getIncomingIntent: received incoming intent from " + getString(R.string.profile_activity));
+            setViewPager(pagerAdapter.getFragmentNumber(getString(R.string.edit_profile_fragment)));
+        }
+    }
+
     private void setupFragments(){
         pagerAdapter = new SectionsStatePagerAdapter(getSupportFragmentManager());
-        pagerAdapter.addFragment(new EditProfileFragment(), getString(R.string.edit_profile));
-        pagerAdapter.addFragment(new SignOutFragment(),getString(R.string.sing_out));
+        pagerAdapter.addFragment(new EditProfileFragment(), getString(R.string.edit_profile_fragment));
+        pagerAdapter.addFragment(new SignOutFragment(),getString(R.string.sign_out_fragment));
     }
 
     private void setViewPager(int fragmentNumber){
@@ -74,8 +85,8 @@ public class AccountSettingsActivity extends AppCompatActivity {
         Log.d(TAG, "setupSettingslist: inicio account settings list");
         ListView listView = findViewById(R.id.lvAccountSettings);
         ArrayList <String> options =  new ArrayList<>();
-        options.add(getString(R.string.edit_profile));
-        options.add(getString(R.string.sing_out));
+        options.add(getString(R.string.edit_profile_fragment));
+        options.add(getString(R.string.sign_out_fragment));
         ArrayAdapter adapter = new ArrayAdapter(AccountSettingsActivity.this, android.R.layout.simple_list_item_1, options);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

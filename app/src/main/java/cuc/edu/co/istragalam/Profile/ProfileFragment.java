@@ -1,19 +1,23 @@
 package cuc.edu.co.istragalam.Profile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,10 +26,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-import java.util.Objects;
-
-import Utils.FirebaseMethods;
+import Utils.BottomNavigationViewHelper;
 import Utils.UniversalmageLoader;
 import cuc.edu.co.istragalam.R;
 import cuc.edu.co.istragalam.models.UserAccountSettings;
@@ -33,82 +36,114 @@ import cuc.edu.co.istragalam.models.UserSettings;
 import cuc.edu.co.istragalam.models.Usuario;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class EditProfileFragment extends Fragment {
-    private static final String TAG = "EditProfileFragment";
+/**
+ * Created by User on 6/29/2017.
+ */
 
-    //firebase
+public class ProfileFragment extends Fragment {
+
+    private static final String TAG = "ProfileFragment";
+    private static final int ACTIVITY_NUM = 4;
+    private TextView mPosts, mFollowers, mFollowing, mDisplayName, mUsername, mWebsite, mDescription;
+    private ProgressBar mProgressBar;
+    private CircleImageView mProfilePhoto;
+    private GridView gridView;
+    private androidx.appcompat.widget.Toolbar toolbar;
+    private ImageView profileMenu;
+    private BottomNavigationViewEx bottomNavigationView;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
-    private FirebaseMethods mFirebaseMethods;
 
-
-    //EditProfile Fragment widgets
-    private EditText mDisplayName, mUsername, mWebsite, mDescription, mEmail, mPhoneNumber;
-    private TextView mChangeProfilePhoto;
-    private CircleImageView mProfilePhoto;
     private Context mContext;
-
-
-
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_editprofile, container, false);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+           View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        mDisplayName = (TextView) view.findViewById(R.id.display_name);
+        mUsername = (TextView) view.findViewById(R.id.username);
+        mWebsite = (TextView) view.findViewById(R.id.website);
+        mDescription = (TextView) view.findViewById(R.id.description);
         mProfilePhoto = (CircleImageView) view.findViewById(R.id.profile_photo);
-        mDisplayName = (EditText) view.findViewById(R.id.display_name);
-        mUsername = (EditText) view.findViewById(R.id.username);
-        mWebsite = (EditText) view.findViewById(R.id.website);
-        mDescription = (EditText) view.findViewById(R.id.description);
-        mEmail = (EditText) view.findViewById(R.id.email);
-        mPhoneNumber = (EditText) view.findViewById(R.id.phoneNumber);
-        mChangeProfilePhoto = (TextView) view.findViewById(R.id.changeProfilePhoto);
+        mPosts = (TextView) view.findViewById(R.id.tvPosts);
+        mFollowers = (TextView) view.findViewById(R.id.tvFollowers);
+        mFollowing = (TextView) view.findViewById(R.id.tvFollowing);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.profileProgressBar);
+        gridView = (GridView) view.findViewById(R.id.gridView);
+        toolbar = (Toolbar) view.findViewById(R.id.profileToolBar);
+        profileMenu = (ImageView) view.findViewById(R.id.profileMenu);
+        bottomNavigationView = (BottomNavigationViewEx) view.findViewById(R.id.bottomNavViewBar);
+        mContext = getActivity();
+        Log.d(TAG, "onCreateView: stared.");
 
 
-
-        //setProfileImage();
+        setupBottomNavigationView();
+        setupToolbar();
         setupFirebaseAuth();
 
-        //back arrow for navigating back to "ProfileActivity"
-        ImageView backArrow = (ImageView) view.findViewById(R.id.backArrow);
-        backArrow.setOnClickListener(new View.OnClickListener() {
+        TextView editProfile = (TextView) view.findViewById(R.id.textEditProfile);
+        editProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: navigating back to ProfileActivity");
-                getActivity().finish();
+                Log.d(TAG, "onClick: navigating to " + mContext.getString(R.string.edit_profile_fragment));
+                Intent intent = new Intent(getActivity(), AccountSettingsActivity.class);
+                intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
+                startActivity(intent);
             }
         });
 
-        return view;
+           return  view;
     }
-
-
-//    private void setProfileImage(){
-//        Log.d(TAG, "setProfileImage: setting profile image.");
-//        String imgURL = "www.androidcentral.com/sites/androidcentral.com/files/styles/xlarge/public/article_images/2016/08/ac-lloyd.jpg?itok=bb72IeLf";
-//        UniversalImageLoader.setImage(imgURL, mProfilePhoto, null, "https://");
-//    }
 
     private void setProfileWidgets(UserSettings userSettings){
         Log.d(TAG, "setProfileWidgets: setting widgets with data retrieving from firebase database: " + userSettings.toString());
-        Log.d(TAG, "setProfileWidgets: setting widgets with data retrieving from firebase database: " + userSettings.getUser().getEmail());
-        Log.d(TAG, "setProfileWidgets: setting widgets with data retrieving from firebase database: " + userSettings.getUser().getPhone_number());
+        Log.d(TAG, "setProfileWidgets: setting widgets with data retrieving from firebase database: " + userSettings.getSettings().getUsername());
 
 
         //User user = userSettings.getUser();
         UserAccountSettings settings = userSettings.getSettings();
+
         UniversalmageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
+
         mDisplayName.setText(settings.getDisplay_name());
         mUsername.setText(settings.getUsername());
         mWebsite.setText(settings.getWebsite());
         mDescription.setText(settings.getDescription());
-        mEmail.setText(userSettings.getUser().getEmail());
-        mPhoneNumber.setText(String.valueOf(userSettings.getUser().getPhone_number()));
-
-
+        mPosts.setText(String.valueOf(settings.getPosts()));
+        mFollowing.setText(String.valueOf(settings.getFollowing()));
+        mFollowers.setText(String.valueOf(settings.getFollowers()));
+        mProgressBar.setVisibility(View.GONE);
     }
-       /*
+
+    private void setupToolbar(){
+
+        ((ProfileActivity)getActivity()).setSupportActionBar(toolbar);
+
+        profileMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: navigating to account settings.");
+                Intent intent = new Intent(mContext, AccountSettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    /**
+     * BottomNavigationView setup
+     */
+    private void setupBottomNavigationView(){
+        Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationView);
+        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationView);
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
+    }
+
+
+    /*
     ------------------------------------ Firebase ---------------------------------------------
      */
 
@@ -158,27 +193,15 @@ public class EditProfileFragment extends Fragment {
         });
     }
 
-    /**
-     * Retrieves the account settings for teh user currently logged in
-     * Database: user_acount_Settings node
-     * @param dataSnapshot
-     * @return
-     */
-    public UserSettings getUserSettings(DataSnapshot dataSnapshot){
-        Log.d(TAG, "getUserAccountSettings: retrieving user account settings from firebase.");
 
+    private UserSettings getUserSettings(DataSnapshot dataSnapshot){
+        Log.d(TAG, "getUserAccountSettings: retrieving user account settings from firebase.");
+        String userID = mAuth.getCurrentUser().getUid();
 
         UserAccountSettings settings  = new UserAccountSettings();
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser usr = mAuth.getCurrentUser();
-        assert usr != null;
-        String userID = usr.getUid();
         Usuario user = new Usuario();
 
-
         for(DataSnapshot ds: dataSnapshot.getChildren()){
-
-            // user_account_settings node
             if(ds.getKey().equals(mContext.getString(R.string.dbname_user_account_settings))) {
                 Log.d(TAG, "getUserAccountSettings: user account settings node datasnapshot: " + ds);
 
@@ -279,4 +302,6 @@ public class EditProfileFragment extends Fragment {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
+
+
 }

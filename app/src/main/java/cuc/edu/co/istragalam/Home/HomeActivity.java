@@ -1,12 +1,20 @@
 package cuc.edu.co.istragalam.Home;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.util.Log;
@@ -21,19 +29,33 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import Utils.BottomNavigationViewHelper;
+import Utils.FirebaseMethods;
 import Utils.SectionsPagerAdapter;
+import Utils.StringManipulation;
 import Utils.UniversalmageLoader;
+import cuc.edu.co.istragalam.Profile.SignOutFragment;
 import cuc.edu.co.istragalam.R;
+import cuc.edu.co.istragalam.models.UserAccountSettings;
+import cuc.edu.co.istragalam.models.Usuario;
 
 public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
     private static final int ACTIVITY_NUM = 0;
+    private String username, email;
+    private String append = " ";
+    private String uid;
     //firebase
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference myRef;
+    private FirebaseMethods firebaseMethods;
+
+    private Context mContext = HomeActivity.this;
     public static final int RC_SIGN_IN = 1;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +66,56 @@ public class HomeActivity extends AppCompatActivity {
         setUtbottomNavigationView();
         setupViewPager();
         mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef =  mFirebaseDatabase.getReference();
+
 
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+            public void onAuthStateChanged(@NonNull  FirebaseAuth firebaseAuth) {
+                 FirebaseUser user = firebaseAuth.getCurrentUser();
+
+  //          Intent intent = new Intent(mContext, SignOutFragment.class);
+
+//                startActivity(intent);
+                Log.d(TAG, "onAuthStateChanged: el ide "+uid);
+
                 if (user!= null){
+                    uid = user.getUid();
                     //onSignedInInitialize(user.getDisplayName());
+                    username = user.getDisplayName();
+                    email = user.getEmail();
+                    Log.d(TAG, "onAuthStateChanged: username: "+username);
+                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            /**
+                             *  if (firebaseMethods.checkIfUsernameExists(username, uid,dataSnapshot)){
+                             *                                 append= myRef.push().getKey().substring(3,10);
+                             *                                 Log.d(TAG, "onDataChange: Ya existe el nombre de usuario, " +
+                             *                                         "toca cambiar el nombre por uno aja ya sabes"+append);
+                             *
+                             *                                     }
+                             */
+
+                            //username = username + append;
+                            Log.d(TAG, "addNewUser: uid"+email);
+                            //agrega el nuevo usuario a la DB
+                           if (checkifusergotprofile(uid)){
+                               addNewUser(uid,email,username,"","","");
+                           }
+
+                            //agrega el nuevo usuario a las configuraciones de la cuenta
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.d(TAG, "onCancelled: "+databaseError);
+
+                        }
+                    });
                 }else{
                     //onSignetOutCleanup();
                     startActivityForResult(
@@ -76,6 +140,61 @@ public class HomeActivity extends AppCompatActivity {
     private void initImageLoader(){
         UniversalmageLoader universalImageLoader = new UniversalmageLoader(HomeActivity.this);
         ImageLoader.getInstance().init(universalImageLoader.getConfig());
+    }
+
+
+    public static  boolean checkifusergotprofile(String id){
+        final ArrayList<String> uid = new ArrayList<>();
+        DatabaseReference mDatabase =FirebaseDatabase.getInstance().getReference("users");
+        mDatabase.orderByChild("user_id").equalTo(id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                    uid.add(snapshot.child("user_id").toString());
+                }
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }   });
+
+        for (String userid : uid){
+            if (userid.equals(id)){
+                return  false;
+            }
+
+        }
+
+
+        return true;
+    }
+
+
+    public void addNewUser(String id,String email, String username, String description, String website, String profile_photo){
+        //FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+        //DatabaseReference  myRef =  mFirebaseDatabase.getReference();
+        Usuario user = new Usuario(id, 1, email, StringManipulation.condenseUsername(username));
+        myRef.child(mContext.getString(R.string.dbname_users))
+                .child(id)
+                .setValue(user);
+        UserAccountSettings settings = new UserAccountSettings(
+                description,
+                username,
+                0,
+                0,
+                0,
+                profile_photo,
+                username,
+                website
+        );
+
+        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
+                .child(id)
+                .setValue(settings);
+
+
     }
 
 
@@ -114,6 +233,14 @@ public class HomeActivity extends AppCompatActivity {
         menuItem.setChecked(true);
     }
 
+
+    public void onStart() {
+        super.onStart();
+        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+
+    }
+
+
     @Override
     public void onResume(){
         super.onResume();
@@ -140,4 +267,11 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    public void onStop() {
+        super.onStop();
+        if (mAuthStateListener != null) {
+            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        }
+
+    }
 }
